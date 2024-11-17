@@ -8,4 +8,5 @@
     <string name="data">Время создания</string>
     <string name="text_input_tv">Текст заметки</string>
     <string name="not_completed">Не выполнено</string>
+    <string name="update_btn">Обновить</string>
 </resources>

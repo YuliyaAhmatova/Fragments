@@ -1,16 +1,12 @@
 package com.example.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.CheckBox
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Date
 
 class MyAdapter(private val notes: MutableList<Note>) :
     RecyclerView.Adapter<MyAdapter.NoteViewHolder>() {
@@ -49,18 +45,14 @@ class MyAdapter(private val notes: MutableList<Note>) :
         holder.dataTV.text = note.data
         holder.textNoteTV.text = note.note
         holder.checkBoxCB.isChecked = note.isChecked == 1
-        holder.infoTV.text = if (note.isChecked == 1)"Выполнено" else "Не выполнено"
+        holder.infoTV.text = if (note.isChecked == 1) "Выполнено" else "Не выполнено"
 
         holder.checkBoxCB.setOnCheckedChangeListener(null)
-        holder.checkBoxCB.setOnCheckedChangeListener {_, isChecked ->
+        holder.checkBoxCB.setOnCheckedChangeListener { _, isChecked ->
             note.isChecked = if (isChecked) 1 else 0
             onCheckedChangeListener?.onCheckedChange(note, isChecked)
             holder.infoTV.text = if (isChecked) "Выполнено" else "Не выполнено"
         }
-//        holder.checkBoxCB.setOnCheckedChangeListener { _, isChecked ->
-//            onCheckedChangeListener?.onCheckedChange(note, isChecked)
-//            holder.infoTV.text = if (isChecked) "Выполнено" else "Не выполнено"
-//        }
 
         holder.itemView.setOnClickListener {
             if (onNoteClickListener != null) {

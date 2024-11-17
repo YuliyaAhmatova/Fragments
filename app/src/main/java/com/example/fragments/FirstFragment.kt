@@ -1,20 +1,21 @@
 package com.example.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Date
 
 class FirstFragment : Fragment() {
+    private lateinit var onFragmentDataListener: OnFragmentDataListener
 
     private lateinit var inputNoteET: EditText
     private lateinit var addBTN: Button
@@ -29,11 +30,8 @@ class FirstFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_first, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        onFragmentDataListener = requireActivity() as OnFragmentDataListener
+        val view = inflater.inflate(R.layout.fragment_first, container, false)
         inputNoteET = view.findViewById(R.id.inputNoteET)
         addBTN = view.findViewById(R.id.addBTN)
         recyclerViewRV = view.findViewById(R.id.recyclerViewRV)
@@ -41,26 +39,9 @@ class FirstFragment : Fragment() {
         db = DBHelper(requireContext())
         recyclerViewRV.layoutManager = LinearLayoutManager(context)
         recyclerViewRV.setHasFixedSize(true)
-
-        viewDataAdapter()
-
-        addBTN.setOnClickListener {
-            saveRecord()
-        }
-        listAdapter?.setOnCheckedChangeListener(object :
-            MyAdapter.OnCheckedChangeListener {
-            override fun onCheckedChange(note: Note, isChecked: Boolean) {
-                if (isChecked) {
-                    note.isChecked = 1
-                } else {
-                    note.isChecked = 0
-                }
-                db.updateNote(note)
-                viewDataAdapter()
-            }
-        }
-        )
+        return view
     }
+
 
     private fun saveRecord() {
         if (inputNoteET.text.trim().isEmpty()) {
@@ -83,6 +64,66 @@ class FirstFragment : Fragment() {
 
         clearEditFields()
         viewDataAdapter()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onResume() {
+        super.onResume()
+        viewDataAdapter()
+
+        val newNote = arguments?.getSerializable("newNote") as Note?
+        val newItem = arguments?.getInt("newItem")
+        if (newNote != null) {
+            notes.clear()
+            notes.addAll(db.readNote())
+            if (newItem != null) {
+                swap(newItem, newNote, notes)
+            }
+            listAdapter = MyAdapter(notes)
+            recyclerViewRV.adapter = listAdapter
+            listAdapter?.notifyDataSetChanged()
+        }
+
+        addBTN.setOnClickListener {
+            saveRecord()
+        }
+
+        listAdapter?.setOnCheckedChangeListener(object :
+            MyAdapter.OnCheckedChangeListener {
+            override fun onCheckedChange(note: Note, isChecked: Boolean) {
+                if (isChecked) {
+                    note.isChecked = 1
+                } else {
+                    note.isChecked = 0
+                }
+                db.updateNote(note)
+                viewDataAdapter()
+            }
+        }
+        )
+        listAdapter?.setOnNoteClickListener(object :
+            MyAdapter.OnNoteClickListener {
+            override fun onNoteClick(note: Note, position: Int) {
+                val builder = AlertDialog.Builder(requireContext())
+                builder
+                    .setTitle("Внимание!")
+                    .setMessage("Предполагаемые действия")
+                    .setPositiveButton("Изменить") { _, _ ->
+                        notes = db.readNote()
+                        onFragmentDataListener.onData(position, note)
+                    }
+                    .setNegativeButton("Удалить") { _, _ ->
+                        db.deleteNote(note)
+                        viewDataAdapter()
+                    }
+                    .create().show()
+            }
+        })
+    }
+
+    private fun swap(newItem: Int, newNote: Note, notes: MutableList<Note>) {
+        notes.add(newItem + 1, newNote)
+        notes.removeAt(newItem)
     }
 
     private fun clearEditFields() {
