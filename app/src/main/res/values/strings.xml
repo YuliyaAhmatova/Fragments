@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Fragments</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="input_note">Поле ввода заметки</string>
+    <string name="add">Добавить</string>
+    <string name="npp">№</string>
+    <string name="data">Время создания</string>
+    <string name="text_input_tv">Текст заметки</string>
+    <string name="not_completed">Не выполнено</string>
+</resources>
