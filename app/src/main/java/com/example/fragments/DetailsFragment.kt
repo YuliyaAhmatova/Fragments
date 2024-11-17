@@ -15,8 +15,6 @@ class DetailsFragment : Fragment(), OnFragmentDataListener {
 
     private lateinit var updateNoteET: EditText
     private lateinit var updateBTN: Button
-    private var note: Note? = null
-    private var notes: MutableList<Note> = mutableListOf()
     private var item: Int = 0
 
     @SuppressLint("MissingInflatedId")
@@ -28,7 +26,7 @@ class DetailsFragment : Fragment(), OnFragmentDataListener {
         val view = inflater.inflate(R.layout.fragment_details, container, false)
         updateNoteET = view.findViewById(R.id.updateNoteET)
         updateBTN = view.findViewById(R.id.updateBTN)
-        var note: Note = arguments?.getSerializable("note") as Note
+        val note: Note = arguments?.getSerializable("note") as Note
         item = arguments?.getInt("item") as Int
         updateNoteET.setText(note.note)
         updateBTN.setOnClickListener {
