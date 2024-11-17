@@ -11,13 +11,13 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
-        private val DATABASE_NAME = "NOTE_DATABASE"
-        private val DATABASE_VERSION = 1
-        val TABLE_NAME = "note_table"
-        val KEY_NUMBER = "number"
-        val KEY_DATA = "data"
-        val KEY_NOTE = "note"
-        val KEY_ISCHECKED = "isChecked"
+        private const val DATABASE_NAME = "NOTE_DATABASE"
+        private const val DATABASE_VERSION = 1
+        const val TABLE_NAME = "note_table"
+        const val KEY_NUMBER = "number"
+        const val KEY_DATA = "data"
+        const val KEY_NOTE = "note"
+        const val KEY_ISCHECKED = "isChecked"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -50,7 +50,7 @@ class DBHelper(context: Context) :
         val noteList: MutableList<Note> = mutableListOf()
         val selectQuery = "SELECT * FROM $TABLE_NAME"
         val db = this.readableDatabase
-        var cursor: Cursor? = null
+        val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
         } catch (e: SQLiteException) {
@@ -71,7 +71,7 @@ class DBHelper(context: Context) :
                 noteList.add(note)
             } while (cursor.moveToNext())
         }
-        cursor?.close()
+        cursor.close()
         db?.close()
         return noteList
     }

@@ -10,10 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentTransaction
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnFragmentDataListener {
 
-    private lateinit var toolbarMain:Toolbar
+    private lateinit var toolbarMain: Toolbar
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         toolbarMain = findViewById(R.id.toolbarMain)
         setSupportActionBar(toolbarMain)
         title = "Мои заметки"
+        val firstFragment = FirstFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.main, firstFragment).commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -44,5 +47,21 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    @SuppressLint("CommitTransaction")
+    override fun onData(item: Int, note: Note) {
+        val bundle = Bundle()
+        bundle.putInt("item", item)
+        bundle.putSerializable("note", note)
+
+        val transaction = this.supportFragmentManager.beginTransaction()
+        val detailsFragment = DetailsFragment()
+        detailsFragment.arguments = bundle
+
+        transaction.replace(R.id.main, detailsFragment)
+        transaction.addToBackStack(null)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.commit()
     }
 }
